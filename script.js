@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Create the slot
             const slot = document.createElement('div');
             slot.classList.add('puzzle-slot');
-            slot.dataset.index = i;
+            slot.dataset.index = index;
             addSlotEvents(slot);
 
             // Create the piece for the letter
