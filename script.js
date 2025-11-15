@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Puzzle Game Logic ---
     const correctWord = "ERIC";
-    let letters = correctWord.split('');
+    const initialWord = "RICE"; // The word to unscramble
 
     function initializePuzzle() {
         // Clear previous state
@@ -55,31 +55,29 @@ document.addEventListener('DOMContentLoaded', () => {
         puzzleMessage.textContent = "";
         tryAgainButton.classList.add('hidden');
         confirmButton.classList.remove('hidden');
+        
+        const initialLetters = initialWord.split('');
 
-        // Create drop slots
-        for (let i = 0; i < correctWord.length; i++) {
+        // Create slots and place initial letters inside them
+        initialLetters.forEach((letter, index) => {
+            // Create the slot
             const slot = document.createElement('div');
             slot.classList.add('puzzle-slot');
             slot.dataset.index = i;
-            puzzleSlotsContainer.appendChild(slot);
             addSlotEvents(slot);
-        }
 
-        // Create and shuffle draggable letter circles
-        const shuffledLetters = [...letters].sort(() => Math.random() - 0.5);
-        shuffledLetters.forEach((letter, index) => {
+            // Create the piece for the letter
             const piece = document.createElement('div');
             piece.id = `piece-${letter}`;
-            piece.classList.add('puzzle-circle');
+            piece.classList.add('puzzle-circle', 'in-slot'); // Start in the slot
             piece.dataset.letter = letter;
             piece.draggable = true;
-
             piece.innerHTML = `
                 <div class="circle-face circle-front">${letter}</div>
-                <div class="circle-face circle-back"></div>
             `;
-            puzzlePiecesContainer.appendChild(piece);
             addPieceEvents(piece);
+            slot.appendChild(piece); // Place the piece inside the slot
+            puzzleSlotsContainer.appendChild(slot); // Add the slot to the container
         });
     }
 
@@ -145,6 +143,10 @@ document.addEventListener('DOMContentLoaded', () => {
         touchedPiece.style.left = '';
         touchedPiece.style.top = '';
         touchedPiece.style.zIndex = '';
+        // The transform is now handled by CSS classes, so we don't need to reset it here
+        // as it was causing a flicker. The 'in-slot' class removes transforms.
+        // touchedPiece.style.transform = '';
+
 
         const touch = e.changedTouches[0];
         const dropZone = document.elementFromPoint(touch.clientX, touch.clientY);
@@ -224,30 +226,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function runIntroAnimation() {
-        const pieces = document.querySelectorAll('.puzzle-circle');
-
-        // 1. Show letters for 3 seconds
-        setTimeout(() => {
-            // 2. Flip all circles to their back
-            pieces.forEach(piece => piece.classList.add('is-flipped'));
-
-            // 3. Animate to random positions (scramble)
-            setTimeout(() => {
-                pieces.forEach(piece => {
-                    const x = (Math.random() - 0.5) * 200;
-                    const y = (Math.random() - 0.5) * 50;
-                    piece.style.transform = `translate(${x}px, ${y}px)`;
-                });
-            }, 500);
-        }, 3000);
-    }
-
     function startGame() {
         initializePuzzle();
-        runIntroAnimation();
     }
-
     confirmButton.addEventListener('click', checkAnswer);
 
     tryAgainButton.addEventListener('click', () => {

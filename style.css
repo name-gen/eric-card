@@ -364,6 +364,7 @@ p {
     perspective: 800px;
     position: relative;
     height: 80px;
+    display: none; /* No longer needed as pieces start in slots */
 }
 
 .puzzle-circle {
