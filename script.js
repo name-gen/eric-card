@@ -265,6 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
         backTitle.textContent = 'A Happy Tune!';
         // Replace 'VIDEO_ID' with the ID from a YouTube URL (e.g., https://www.youtube.com/watch?v=VIDEO_ID)
         const videoId = 'https://www.youtube.com/watch?v=5u4xTa3LR2U&list=RD5u4xTa3LR2U&start_radio=1'; // Example: A gentle lullaby
+        const videoId = '5u4xTa3LR2U'; // The ID is the part after "v="
         backContent.innerHTML = `
             <iframe style="width:100%; height: 100%; border:0;" 
                 src="https://www.youtube.com/embed/${videoId}" 
