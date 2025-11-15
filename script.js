@@ -98,12 +98,12 @@ document.addEventListener('DOMContentLoaded', () => {
             touchedPiece = piece;
             const touch = e.touches[0];
 
-            piece.classList.add('dragging');
-            // Use fixed positioning to move the piece freely
-            // and calculate offset to center the piece on the finger
-            touchStartX = touch.clientX - piece.offsetLeft;
-            touchStartY = touch.clientY - piece.offsetTop;
             const rect = piece.getBoundingClientRect();
+            // Calculate the offset of the finger from the top-left of the element
+            touchStartX = touch.clientX - rect.left;
+            touchStartY = touch.clientY - rect.top;
+
+            piece.classList.add('dragging');
             piece.style.position = 'fixed';
             piece.style.left = `${rect.left}px`;
             piece.style.top = `${rect.top}px`;
@@ -120,8 +120,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const touch = e.touches[0];
 
         // Move the piece with the finger by updating its top/left
-        touchedPiece.style.left = `${touch.clientX - touchedPiece.offsetWidth / 2}px`;
-        touchedPiece.style.top = `${touch.clientY - touchedPiece.offsetHeight / 2}px`;
+        touchedPiece.style.left = `${touch.clientX - touchStartX}px`;
+        touchedPiece.style.top = `${touch.clientY - touchStartY}px`;
 
         // Find the element under the finger
         const elementUnderTouch = document.elementFromPoint(touch.clientX, touch.clientY);
