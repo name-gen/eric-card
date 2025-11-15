@@ -22,6 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Variable to keep track of the piece being dragged via touch
     let touchedPiece = null;
+    let touchStartX = 0;
+    let touchStartY = 0;
 
     // --- Create Twinkling Stars ---
     const starsContainer = document.querySelector('.stars-container');
@@ -92,8 +94,19 @@ document.addEventListener('DOMContentLoaded', () => {
         piece.addEventListener('touchstart', (e) => {
             // Prevent page scrolling while dragging
             e.preventDefault();
+            
             touchedPiece = piece;
+            const touch = e.touches[0];
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+
             piece.classList.add('dragging');
+            // Use fixed positioning to move the piece freely
+            const rect = piece.getBoundingClientRect();
+            piece.style.position = 'fixed';
+            piece.style.left = `${rect.left}px`;
+            piece.style.top = `${rect.top}px`;
+            piece.style.zIndex = '1000';
         }, { passive: false });
     }
 
@@ -104,6 +117,12 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
 
         const touch = e.touches[0];
+
+        // Move the piece with the finger
+        const deltaX = touch.clientX - touchStartX;
+        const deltaY = touch.clientY - touchStartY;
+        touchedPiece.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+
         // Find the element under the finger
         const elementUnderTouch = document.elementFromPoint(touch.clientX, touch.clientY);
 
@@ -120,6 +139,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.addEventListener('touchend', (e) => {
         if (!touchedPiece) return;
+
+        // Reset styles after dragging
+        touchedPiece.style.position = '';
+        touchedPiece.style.left = '';
+        touchedPiece.style.top = '';
+        touchedPiece.style.zIndex = '';
+        touchedPiece.style.transform = '';
 
         const touch = e.changedTouches[0];
         const dropZone = document.elementFromPoint(touch.clientX, touch.clientY);
