@@ -103,9 +103,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (slot.children.length === 0) {
                 slot.appendChild(piece);
             } else {
+                // Swap the piece in the slot with the one being dragged
                 const existingPiece = slot.children[0];
-                const originalContainer = document.querySelector(`#${piece.id}`).parentElement;
-                originalContainer.appendChild(existingPiece);
+                const sourceContainer = piece.parentElement; // The container the piece was dragged from
+                sourceContainer.appendChild(existingPiece);
                 slot.appendChild(piece);
             }
         });
