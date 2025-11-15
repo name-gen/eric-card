@@ -97,11 +97,12 @@ document.addEventListener('DOMContentLoaded', () => {
             
             touchedPiece = piece;
             const touch = e.touches[0];
-            touchStartX = touch.clientX;
-            touchStartY = touch.clientY;
 
             piece.classList.add('dragging');
             // Use fixed positioning to move the piece freely
+            // and calculate offset to center the piece on the finger
+            touchStartX = touch.clientX - piece.offsetLeft;
+            touchStartY = touch.clientY - piece.offsetTop;
             const rect = piece.getBoundingClientRect();
             piece.style.position = 'fixed';
             piece.style.left = `${rect.left}px`;
@@ -118,10 +119,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const touch = e.touches[0];
 
-        // Move the piece with the finger
-        const deltaX = touch.clientX - touchStartX;
-        const deltaY = touch.clientY - touchStartY;
-        touchedPiece.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+        // Move the piece with the finger by updating its top/left
+        touchedPiece.style.left = `${touch.clientX - touchedPiece.offsetWidth / 2}px`;
+        touchedPiece.style.top = `${touch.clientY - touchedPiece.offsetHeight / 2}px`;
 
         // Find the element under the finger
         const elementUnderTouch = document.elementFromPoint(touch.clientX, touch.clientY);
@@ -145,7 +145,6 @@ document.addEventListener('DOMContentLoaded', () => {
         touchedPiece.style.left = '';
         touchedPiece.style.top = '';
         touchedPiece.style.zIndex = '';
-        touchedPiece.style.transform = '';
 
         const touch = e.changedTouches[0];
         const dropZone = document.elementFromPoint(touch.clientX, touch.clientY);
