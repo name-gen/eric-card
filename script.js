@@ -20,6 +20,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const backContent = document.getElementById('back-content');
     const nephewNameEl = document.getElementById('nephew-name');
 
+    // Variable to keep track of the piece being dragged via touch
+    let touchedPiece = null;
+
     // --- Create Twinkling Stars ---
     const starsContainer = document.querySelector('.stars-container');
     const numberOfStars = 30;
@@ -84,6 +87,51 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => piece.classList.add('dragging'), 0);
         });
         piece.addEventListener('dragend', () => piece.classList.remove('dragging'));
+
+        // --- Touch Events for Mobile ---
+        piece.addEventListener('touchstart', (e) => {
+            // Prevent page scrolling while dragging
+            e.preventDefault();
+            touchedPiece = piece;
+            piece.classList.add('dragging');
+        }, { passive: false });
+    }
+
+    // We need global touch listeners to handle moving and dropping
+    document.addEventListener('touchmove', (e) => {
+        if (!touchedPiece) return;
+        // Prevent page scrolling
+        e.preventDefault();
+
+        const touch = e.touches[0];
+        // Find the element under the finger
+        const elementUnderTouch = document.elementFromPoint(touch.clientX, touch.clientY);
+
+        // Visually indicate which slot is being hovered over
+        document.querySelectorAll('.puzzle-slot').forEach(slot => {
+            if (slot === elementUnderTouch || slot.contains(elementUnderTouch)) {
+                slot.classList.add('drag-over');
+            } else {
+                slot.classList.remove('drag-over');
+            }
+        });
+
+    }, { passive: false });
+
+    document.addEventListener('touchend', (e) => {
+        if (!touchedPiece) return;
+
+        const touch = e.changedTouches[0];
+        const dropZone = document.elementFromPoint(touch.clientX, touch.clientY);
+
+        // Find the closest puzzle-slot and trigger the drop logic
+        const slot = dropZone ? dropZone.closest('.puzzle-slot') : null;
+        if (slot) {
+            handleDrop(slot, touchedPiece);
+        }
+
+        touchedPiece.classList.remove('dragging');
+        touchedPiece = null;
     }
 
     function addSlotEvents(slot) {
@@ -95,21 +143,27 @@ document.addEventListener('DOMContentLoaded', () => {
         slot.addEventListener('drop', (e) => {
             e.preventDefault();
             slot.classList.remove('drag-over');
+
             const pieceId = e.dataTransfer.getData('text/plain');
             const piece = document.getElementById(pieceId);
-
-            piece.classList.add('in-slot');
-            // If slot is empty, append. If not, swap.
-            if (slot.children.length === 0) {
-                slot.appendChild(piece);
-            } else {
-                // Swap the piece in the slot with the one being dragged
-                const existingPiece = slot.children[0];
-                const sourceContainer = piece.parentElement; // The container the piece was dragged from
-                sourceContainer.appendChild(existingPiece);
-                slot.appendChild(piece);
-            }
+            handleDrop(slot, piece);
         });
+    }
+
+    // Centralized function to handle dropping a piece into a slot
+    function handleDrop(slot, piece) {
+        slot.classList.remove('drag-over');
+        piece.classList.add('in-slot');
+
+        // If slot is empty, append. If not, swap.
+        if (slot.children.length === 0) {
+            slot.appendChild(piece);
+        } else {
+            const existingPiece = slot.children[0];
+            const sourceContainer = piece.parentElement; // The container the piece was dragged from
+            sourceContainer.appendChild(existingPiece);
+            slot.appendChild(piece);
+        }
     }
 
     function checkAnswer() {
