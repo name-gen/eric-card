@@ -1,0 +1,490 @@
+/* General Body Styles */
+body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #e0f7fa; /* Light sky blue background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Card Styling */
+.card-container {
+    perspective: 1000px;
+}
+
+.card {
+    width: 90vw;
+    max-width: 400px;
+    background: #ffffff;
+    border-radius: 20px;
+    overflow: hidden;
+    /* The card itself is no longer transformed, its inner content is */
+}
+
+.card-inner {
+    position: relative;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+    /* Use Grid to stack front and back */
+    display: grid;
+}
+
+.card.is-flipped .card-inner {
+    transform: rotateY(180deg);
+}
+
+.card-front, .card-back {
+    -webkit-backface-visibility: hidden; /* Safari */
+    backface-visibility: hidden;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    /* Place both front and back in the same grid cell */
+    grid-row: 1 / 1;
+    grid-column: 1 / 1;
+}
+
+.sky {
+    position: relative;
+    height: 200px;
+    background: linear-gradient(to bottom, #87CEEB, #B2EBF2); /* Sky gradient */
+    overflow: hidden;
+}
+
+/* Stars Styling & Animation */
+.stars-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background-color: white;
+    border-radius: 50%;
+    box-shadow: 0 0 6px 2px rgba(255, 255, 255, 0.8);
+    animation: twinkle 3s linear infinite;
+    transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
+}
+
+.star:hover {
+    transform: scale(2.5);
+    opacity: 1 !important; /* Override animation opacity on hover */
+    animation-play-state: paused; /* Pause twinkle on hover */
+    cursor: pointer;
+}
+
+/* Stork Animation */
+.stork {
+    position: absolute;
+    width: 150px;
+    height: 150px; /* Match the frame's aspect ratio */
+    bottom: 20px;
+    left: -150px; /* Start off-screen */
+    
+    /* Spritesheet setup */
+    background-image: url('https://i.imgur.com/O4f2aJg.png');
+    background-size: 400% 100%; /* 4 frames horizontally */
+    
+    /* Multiple animations: one for flapping, one for flying in */
+    animation: 
+        flap-wings 0.5s steps(3) infinite, /* Flapping animation */
+        fly-in 5s 1s ease-out forwards;    /* Fly-in animation */
+}
+
+@keyframes fly-in {
+    0% {
+        left: -150px;
+        transform: translateY(0) scale(0.8);
+    }
+    50% {
+        left: calc(50% - 75px); /* Center of the card */
+        transform: translateY(-20px) scale(1);
+    }
+    100% {
+        left: calc(50% - 75px);
+        transform: translateY(-20px) scale(1);
+    }
+}
+
+@keyframes flap-wings {
+    to {
+        background-position: 100% 0;
+    }
+}
+
+/* Cloud Animation */
+.cloud {
+    position: absolute;
+    background: #fff;
+    border-radius: 50%;
+    opacity: 0.8;
+    animation: drift 20s linear infinite;
+}
+.cloud::before, .cloud::after {
+    content: '';
+    position: absolute;
+    background: #fff;
+    border-radius: 50%;
+}
+.cloud1 { width: 60px; height: 60px; top: 50px; left: -80px; animation-duration: 25s; }
+.cloud1::before { width: 40px; height: 40px; top: -20px; left: 10px; }
+.cloud1::after { width: 50px; height: 50px; top: 0; left: -25px; }
+
+.cloud2 { width: 80px; height: 80px; top: 20px; left: -150px; animation-duration: 35s; animation-delay: -5s; }
+.cloud2::before { width: 50px; height: 50px; top: -30px; left: 15px; }
+.cloud2::after { width: 60px; height: 60px; top: 0; left: -35px; }
+
+.cloud3 { width: 50px; height: 50px; top: 80px; left: -100px; animation-duration: 30s; animation-delay: -10s; }
+.cloud3::before { width: 30px; height: 30px; top: -15px; left: 10px; }
+
+@keyframes drift {
+    from { transform: translateX(0); }
+    to { transform: translateX(550px); } /* Move across the card and beyond */
+}
+
+@keyframes twinkle {
+    0%, 100% {
+        opacity: 0.3;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Message Area Styling */
+.message-area {
+    padding: 20px;
+    text-align: center;
+    color: #37474F;
+}
+
+.message-area h1, .message-area h2, .message-area p {
+    opacity: 0; /* Start invisible */
+    transform: translateY(20px);
+    animation: fade-in 1.5s ease-out forwards;
+}
+
+h1 {
+    font-family: 'Pacifico', cursive;
+    font-size: 2em;
+    color: #00796B;
+    margin: 0;
+    animation-delay: 4s; /* Delay to match stork animation */
+}
+
+h2 {
+    font-family: 'Pacifico', cursive;
+    font-size: 1.5em;
+    color: #0097A7;
+    margin: 5px 0 15px;
+    animation-delay: 4.5s;
+}
+
+/* Blinking cursor for typing effect */
+h2.typing::after {
+    content: '|';
+    animation: blink 1s step-end infinite;
+    color: #0097A7;
+    font-weight: 300;
+}
+
+@keyframes blink {
+    from, to { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+p {
+    font-size: 1em;
+    line-height: 1.6;
+    animation-delay: 5s;
+}
+
+#love { animation-delay: 5.5s; }
+#sender-name { font-weight: bold; animation-delay: 6s; }
+
+@keyframes fade-in {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Card Actions (Icons) */
+.card-actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 0 20px 20px;
+    background: #fff;
+}
+
+.card-actions button {
+    background: none;
+    border: 2px solid #0097A7;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    color: #0097A7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+    position: relative; /* Needed for badge positioning */
+}
+
+.card-actions button:hover {
+    background: #0097A7;
+    color: #fff;
+    transform: scale(1.1);
+}
+
+/* Shaking animation for the message button */
+#show-message {
+    animation: shake 2.5s cubic-bezier(.36,.07,.19,.97) both infinite;
+    transform: translate3d(0, 0, 0);
+}
+
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-3px, 0, 0); }
+  40%, 60% { transform: translate3d(3px, 0, 0); }
+}
+
+/* Notification Badge Styling */
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 20px;
+    height: 20px;
+    background-color: #ff3b30; /* A bright red */
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    border: 2px solid white;
+}
+
+/* When the card is flipped, hide the badge and stop shaking */
+.card.is-flipped #show-message {
+    animation: none;
+}
+
+.card-actions svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* Card Back Styling */
+.card-back {
+    background: #f0f8ff;
+    transform: rotateY(180deg);
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Ensure back card fills the space */
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 2.5em;
+    line-height: 1;
+    color: #aaa;
+    cursor: pointer;
+}
+
+/* Captcha Styling */
+.baby-captcha-container {
+    background: #fff;
+    padding: 30px 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    color: #37474F;
+    font-family: 'Roboto', sans-serif;
+    transition: opacity 0.5s ease-out;
+}
+
+#back-title {
+    font-family: 'Pacifico', cursive;
+    color: #00796B;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.captcha-title {
+    font-family: 'Pacifico', cursive;
+    color: #00796B;
+    font-size: 2em;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+/* --- Puzzle Game Styles --- */
+#puzzle-slots {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 20px 0;
+    min-height: 80px; /* Reserve space */
+}
+
+.puzzle-slot {
+    width: 65px;
+    height: 65px;
+    border: 3px dashed #B0BEC5;
+    border-radius: 50%;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.puzzle-slot.drag-over {
+    background-color: #E0F7FA;
+    border-color: #0097A7;
+}
+
+#puzzle-pieces {
+    perspective: 800px;
+    position: relative;
+    height: 80px;
+}
+
+.puzzle-circle {
+    width: 60px;
+    height: 60px;
+    transition: transform 1s ease-in-out;
+    transform-style: preserve-3d;
+    position: absolute; /* For scrambling animation */
+    left: 50%;
+    top: 0;
+    /* Center the circle for scrambling */
+    margin-left: -30px;
+}
+
+.puzzle-circle.in-slot {
+    position: static; /* Reset positioning to sit inside the slot */
+    transform: none !important; /* Remove any scramble transforms */
+    margin-left: 0;
+}
+
+.puzzle-circle.is-flipped {
+    transform: rotateY(180deg);
+}
+
+.puzzle-circle.is-solved {
+    cursor: default;
+}
+
+.circle-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Pacifico', cursive;
+    font-size: 2.5em;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.circle-front {
+    background: #fff;
+    color: #00796B;
+    border: 3px solid #00796B;
+}
+
+.circle-back {
+    background: #0097A7;
+    transform: rotateY(180deg);
+    cursor: pointer;
+}
+
+.puzzle-circle.disabled .circle-back {
+    cursor: not-allowed;
+    background: #B0BEC5;
+}
+
+#confirm-button, #try-again-button {
+    padding: 8px 15px;
+    border: none;
+    background-color: #0097A7;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.2s;
+    margin-top: 10px;
+}
+
+#confirm-button:hover, #try-again-button:hover {
+    background-color: #00796B;
+    transform: scale(1.05);
+}
+
+#captcha-message {
+    margin-top: 15px;
+    font-weight: bold;
+    color: #d32f2f; /* A reddish color for messages */
+}
+
+#back-content {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+/* Responsive Design for Larger Screens */
+@media (min-width: 600px) {
+    .card {
+        max-width: 500px;
+    }
+    .sky {
+        height: 250px;
+    }
+    .stork {
+        width: 200px;
+        left: -200px;
+        height: 200px;
+    }
+    @keyframes fly-in {
+        0% {
+            left: -200px;
+            transform: translateY(0) scale(0.8);
+        }
+        50% {
+            left: calc(50% - 100px); /* Center of the card */
+            transform: translateY(-30px) scale(1);
+        }
+        100% {
+            left: calc(50% - 100px);
+            transform: translateY(-30px) scale(1);
+        }
+    }
+    h1 { font-size: 2.5em; }
+    h2 { font-size: 2em; }
+    p { font-size: 1.1em; }
+}
+
+/* Utility Class */
+.hidden {
+    display: none;
+}
