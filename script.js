@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         touchedPiece.classList.remove('dragging');
         touchedPiece = null;
-    }
+    });
 
     function addSlotEvents(slot) {
         slot.addEventListener('dragover', (e) => {
